@@ -1,24 +1,34 @@
 async function predictRisk() {
-    const fatigue = document.getElementById("fatigue").value;
-    const sleep = document.getElementById("sleep").value;
-    const stress = document.getElementById("stress").value;
-    const mission = document.getElementById("mission").value;
+    const data = {
+        age: Number(document.getElementById("age").value),
+        heart_rate: Number(document.getElementById("heartRate").value),
+        stress_level: Number(document.getElementById("stress").value),
+        sleep_hours: Number(document.getElementById("sleep").value),
+        fatigue_level: Number(document.getElementById("fatigue").value),
+        blood_pressure: Number(document.getElementById("bp").value),
+        oxygen_level: Number(document.getElementById("oxygen").value),
+        daily_steps: Number(document.getElementById("steps").value)
+    };
 
-    const response = await fetch("http://127.0.0.1:8000/predict-risk", {
-        method: "POST",
-        headers: {
-            "Content-Type": "application/json"
-        },
-        body: JSON.stringify({
-            fatigue: Number(fatigue),
-            sleep: Number(sleep),
-            stress: Number(stress),
-            mission_intensity: Number(mission)
-        })
-    });
+    try {
+        const response = await fetch("http://127.0.0.1:8000/predict", {
+            method: "POST",
+            headers: {
+                "Content-Type": "application/json"
+            },
+            body: JSON.stringify(data)
+        });
 
-    const data = await response.json();
+        const result = await response.json();
 
-    document.getElementById("result").innerHTML =
-        `⚠️ Risk Level: <b>${data.risk_level}</b>`;
+        document.getElementById("result").innerHTML = `
+            <h3>Risk Level: ${result.risk_level}</h3>
+            <p>Risk Score: ${result.risk_score}</p>
+        `;
+
+    } catch (error) {
+        document.getElementById("result").innerHTML =
+            "❌ Backend not reachable.";
+        console.error(error);
+    }
 }

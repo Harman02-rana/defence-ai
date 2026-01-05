@@ -1,0 +1,83 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Defence-AI | Input</title>
+    <style>
+        body { background:#0f2a23; color:white; font-family:Arial; }
+        .box {
+            max-width: 900px;
+            margin: 50px auto;
+            background: #13362e;
+            padding: 30px;
+            border-radius: 10px;
+        }
+        .grid {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 15px;
+        }
+        input {
+            padding: 12px;
+            border-radius: 6px;
+            border: none;
+        }
+        button {
+            margin-top: 25px;
+            width: 100%;
+            padding: 15px;
+            background: #2ea44f;
+            border: none;
+            color: white;
+            font-size: 16px;
+            border-radius: 6px;
+            cursor: pointer;
+        }
+    </style>
+</head>
+<body>
+
+<div class="box">
+    <h2>🧠 Soldier Health Input</h2>
+
+    <div class="grid">
+        <input id="heartRate" placeholder="Heart Rate (bpm)">
+        <input id="stress" placeholder="Stress Level (0-10)">
+        <input id="sleep" placeholder="Sleep Hours">
+        <input id="fatigue" placeholder="Fatigue Level (0-10)">
+        <input id="age" placeholder="Age">
+        <input id="bp" placeholder="Blood Pressure">
+        <input id="oxygen" placeholder="Oxygen Level (%)">
+        <input id="steps" placeholder="Daily Steps">
+    </div>
+
+    <button onclick="submitData()">Submit for Prediction</button>
+</div>
+
+<script>
+async function submitData() {
+    const data = {
+        age: Number(age.value),
+        heart_rate: Number(heartRate.value),
+        stress_level: Number(stress.value),
+        sleep_hours: Number(sleep.value),
+        fatigue_level: Number(fatigue.value),
+        blood_pressure: Number(bp.value),
+        oxygen_level: Number(oxygen.value),
+        daily_steps: Number(steps.value)
+    };
+
+    const response = await fetch("http://127.0.0.1:8000/predict", {
+        method: "POST",
+        headers: {"Content-Type": "application/json"},
+        body: JSON.stringify(data)
+    });
+
+    const result = await response.json();
+    localStorage.setItem("prediction", JSON.stringify(result));
+    location.href = "result.html";
+}
+</script>
+
+</body>
+</html>

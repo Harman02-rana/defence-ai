@@ -1,39 +1,44 @@
 from fastapi import FastAPI
-import numpy as np
+from fastapi.middleware.cors import CORSMiddleware
+from backend.schemas import SoldierData
 
-from .model_loader import model, scaler
-from .schemas import ThreatInput
+app = FastAPI(title="Defence-AI")
 
-app = FastAPI(title="Defence AI Threat Detection")
+# CORS (already discussed)
+app.add_middleware(
+    CORSMiddleware,
+    allow_origins=["*"],
+    allow_credentials=True,
+    allow_methods=["*"],
+    allow_headers=["*"],
+)
 
 @app.get("/")
 def root():
-    return {"status": "Defence-AI Backend Running"}
+    return {"status": "Backend running"}
 
 @app.post("/predict")
-def predict_threat(data: ThreatInput):
-    input_data = np.array([[ 
-        data.distance_km,
-        data.speed_kmph,
-        data.altitude_m,
-        data.radar_cross_section,
-        data.heat_signature,
-        data.signal_jamming,
-        data.object_size,
-        data.time_of_day
-    ]])
+def predict(data: SoldierData):
+    # TEMP logic (replace later with ML model)
+    risk_score = (
+        data.heart_rate * 0.25 +
+        data.stress_level * 5 +
+        (10 - data.sleep_hours) * 5 +
+        data.fatigue_level * 6 +
+        data.blood_pressure * 2 +
+        (100 - data.oxygen_level) * 0.4 +
+        (10000 - data.daily_steps) * 0.001
+    )
 
-    scaled = scaler.transform(input_data)
-    prediction = int(model.predict(scaled)[0])
-
-    threat_map = {
-        0: "No Threat",
-        1: "Low Threat",
-        2: "Medium Threat",
-        3: "High Threat"
-    }
+    if risk_score > 120:
+        risk = "HIGH"
+    elif risk_score > 70:
+        risk = "MEDIUM"
+    else:
+        risk = "LOW"
 
     return {
-        "threat_level": prediction,
-        "description": threat_map[prediction]
+        "risk_level": risk,
+        "risk_score": round(risk_score, 2),
+        "received_features": data.dict()
     }

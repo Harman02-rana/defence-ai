@@ -1,4 +1,6 @@
 from fastapi import FastAPI
+app = FastAPI()
+
 import numpy as np
 
 from backend.model_loader import model
@@ -12,17 +14,26 @@ def root():
 
 @app.post("/predict-risk")
 def predict_risk(data: SoldierData):
-    input_data = np.array([[  
+    input_data = [[
+        data.heart_rate,
+        data.stress_level,
+        data.sleep_hours,
         data.fatigue,
-        data.sleep,
-        data.stress,
-        data.mission_intensity
-    ]])
+        data.age,
+        data.blood_pressure,
+        data.oxygen_level,
+        data.steps
+    ]]
 
     prediction = model.predict(input_data)[0]
+    probability = model.predict_proba(input_data)[0][prediction]
 
-    risk_label = "HIGH" if prediction == 1 else "LOW"
+    risk = "HIGH" if prediction == 1 else "LOW"
 
     return {
-        "risk": risk_label
+        "status": "EXECUTED",
+        "prediction": int(prediction),
+        "risk": risk,
+        "confidence": round(float(probability), 2),
+        "received": data.dict()
     }

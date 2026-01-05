@@ -1,0 +1,47 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Defence-AI | Result</title>
+    <style>
+        body { background:#0f2a23; color:white; font-family:Arial; text-align:center; }
+        .box {
+            max-width: 600px;
+            margin: 80px auto;
+            background: #13362e;
+            padding: 40px;
+            border-radius: 10px;
+        }
+        button {
+            margin-top: 20px;
+            padding: 12px 25px;
+            background: #2ea44f;
+            border: none;
+            color: white;
+            border-radius: 6px;
+            cursor: pointer;
+        }
+    </style>
+</head>
+<body>
+
+<div class="box">
+    <h2>📊 Risk Assessment Result</h2>
+    <div id="output"></div>
+
+    <button onclick="location.href='thankyou.html'">
+        Continue
+    </button>
+</div>
+
+<script>
+const result = JSON.parse(localStorage.getItem("prediction"));
+
+document.getElementById("output").innerHTML = `
+    <h3>Risk Level: ${result.risk_level}</h3>
+    <p>Risk Score: ${result.risk_score}</p>
+`;
+</script>
+
+</body>
+</html>
